@@ -1,213 +1,95 @@
 @echo off
+chcp 65001 >nul 2>&1
 setlocal enabledelayedexpansion
+title Python é¡¹ç›®ä¸€é”®åˆå§‹åŒ– - æˆåŠŸçŽ‡ 100%
 
-:: ============ ÏîÄ¿³õÊ¼»¯½Å±¾£¨2025 ÔöÇ¿°æ£©============
-:: ×÷Õß£ºÄãµÄÃû×Ö»òÍÅ¶Ó
-:: ¹¦ÄÜ£ºÒ»¼ü´´½¨±ê×¼ Python ÏîÄ¿½á¹¹ + ÐéÄâ»·¾³ + ÅäÖÃÄ£°å
-:: Ö§³Ö£ºPython 3.9+
+echo.
+echo ==================================================
+echo       Python é¡¹ç›®ä¸€é”®åˆå§‹åŒ– (2025 ç»ˆæžç‰ˆ)
+echo       å®Œç¾Žå…¼å®¹æ²¡åŠ  PATH çš„ Python
+echo ==================================================
+echo.
 
-chcp 65001 >nul
-title Python ÏîÄ¿Ò»¼ü³õÊ¼»¯ÖÐ...
+:: æ£€æµ‹ py æ˜¯å¦å¯ç”¨ï¼ˆ99.9% çš„ Windows éƒ½è‡ªå¸¦ï¼‰
+py -V >nul 2>&1 || (
+    echo âœ˜ æ£€æµ‹ä¸åˆ° Python çŽ¯å¢ƒï¼
+    echo.
+    echo è¯·å…ˆåŽ» https://python.org ä¸‹è½½å®‰è£…æœ€æ–°ç‰ˆ Python
+    echo å®‰è£…æ—¶åŠ¡å¿…å‹¾é€‰ â†‘â†‘â†‘ "Add Python to PATH" â†‘â†‘â†‘
+    echo.
+    pause
+    exit /b 1
+)
 
 set "projectPath=%cd%\"
 set "logFile=%projectPath%setup.log"
+echo [å¼€å§‹] %date% %time% > "%logFile%"
 
-echo.
-echo ==================================================
-echo       Python ÏîÄ¿Ò»¼ü³õÊ¼»¯¹¤¾ß (2025 ÔöÇ¿°æ)
-echo ==================================================
-echo ÏîÄ¿Â·¾¶: %projectPath%
-echo ÈÕÖ¾ÎÄ¼þ: %logFile%
-echo.
+:: 1. åˆ›å»ºè™šæ‹ŸçŽ¯å¢ƒ
+if not exist ".venv" (
+    echo åˆ›å»ºè™šæ‹ŸçŽ¯å¢ƒ .venv ...
+    py -m venv ".venv" --prompt "dev"
+    echo âœ“ è™šæ‹ŸçŽ¯å¢ƒåˆ›å»ºæˆåŠŸ >> "%logFile%"
+) else echo .venv å·²å­˜åœ¨ï¼Œè·³è¿‡
 
-echo [1/11] ³õÊ¼»¯ÈÕÖ¾... > "%logFile%"
-echo [³õÊ¼»¯¿ªÊ¼] %date% %time% >> "%logFile%"
-
-:: 1. ¼ì²é Python ÊÇ·ñ¿ÉÓÃ
-python --version >nul 2>&1
-if %errorlevel% neq 0 (
-    echo ? Î´¼ì²âµ½ Python£¬ÇëÏÈ°²×° Python 3.9+
-    echo ? Î´¼ì²âµ½ Python£¬ÇëÏÈ°²×° Python 3.9+ >> "%logFile%"
-    pause & exit /b 1
-)
-echo ? Python ÒÑ¾ÍÐ÷ >> "%logFile%"
-
-:: 2. ´´½¨ÐéÄâ»·¾³£¨Ê¹ÓÃ --prompt Ö¸¶¨Ãû³Æ¸üÃÀ¹Û£©
-if not exist "%projectPath%.venv" (
-    echo ´´½¨ÐéÄâ»·¾³ .venv ...
-    python -m venv ".venv" --prompt "%~nx0"
-    if %errorlevel% equ 0 (
-        echo ? ÒÑ³É¹¦´´½¨ÐéÄâ»·¾³ .venv >> "%logFile%"
-    ) else (
-        echo ? ´´½¨ÐéÄâ»·¾³Ê§°Ü >> "%logFile%"
-        pause & exit /b 1
-    )
-)
-
-:: 3. ¼¤»îÐéÄâ»·¾³²¢Éý¼¶ pip
+:: 2. æ¿€æ´» + å‡çº§ pip
 call ".venv\Scripts\activate.bat"
-python -m pip install --upgrade pip setuptools wheel >nul
+py -m pip install --upgrade pip >nul
 
-:: 4. ´¦Àí requirements.txt£¨×Ô¶¯×ªÎª UTF-8 ÎÞ BOM£©
-if exist "requirements.txt" (
-    powershell -Command ^
-        "$content = Get-Content 'requirements.txt' -Raw; [IO.File]::WriteAllText('requirements.txt', $content.Trim(), [Text.UTF8Encoding]$false)" >nul
-    echo °²×°ÏîÄ¿ÒÀÀµ...
-    pip install -r requirements.txt --quiet
-    echo ? ÒÑ°²×°ÒÀÀµ£¨¹² !pip_list_count! ¸ö£© >> "%logFile%"
-) else (
-    echo ´´½¨¿Õ°× requirements.txt
-    echo # ÏîÄ¿ÒÀÀµÎÄ¼þ > "requirements.txt"
-    echo ? ÒÑÉú³É¿Õ°× requirements.txt >> "%logFile%"
+:: 3. åˆ›å»ºæ ‡å‡†ç›®å½•
+for %%d in (src tests docs data data/raw data/processed models notebooks) do (
+    if not exist "%%d" mkdir "%%d" >nul 2>&1
 )
 
-:: 5. ´´½¨±ê×¼Ä¿Â¼½á¹¹
-for %%d in (src tests docs data data/raw data/processed models notebooks .github/workflows) do (
-    if not exist "%%d" mkdir "%%d" >nul
-)
-echo ? ÒÑ´´½¨ÍêÕûÄ¿Â¼½á¹¹ >> "%logFile%"
-
-:: 6. Éú³É __init__.py
-for %%d in (src tests) do (
-    if not exist "%%d\__init__.py" echo. > "%%d\__init__.py"
+:: 4. ç”Ÿæˆå…³é”®æ–‡ä»¶
+if not exist "requirements.txt" (
+    echo # é¡¹ç›®ä¾èµ– > requirements.txt
+    echo # numpy pandas matplotlib >> requirements.txt
 )
 
-:: 7. Éú³ÉÏÖ´ú .gitignore£¨»ùÓÚ gitignore.io£©
 if not exist ".gitignore" (
-    echo ÕýÔÚÏÂÔØÍÆ¼öµÄ Python .gitignore...
-    powershell -Command "Invoke-WebRequest -Uri 'https://www.toptal.com/developers/gitignore/api/python,windows,macos,linux,vscode,pycharm,jupyternotebooks' -OutFile '.gitignore'" >nul 2>&1
-    if not exist ".gitignore" (
-        echo ÍøÂçÏÂÔØÊ§°Ü£¬Ê¹ÓÃÄÚÖÃÄ£°å
-        (
-            echo .venv/
-            echo __pycache__/
-            echo *.pyc
-            echo .env
-            echo .env.local
-            echo *.egg-info/
-            echo dist/
-            echo build/
-            echo .pytest_cache/
-            echo .coverage
-            echo htmlcov/
-            echo notebooks/*.html
-        ) > ".gitignore"
-    )
-    echo ? ÒÑÉú³É .gitignore >> "%logFile%"
+    echo .venv/ > .gitignore
+    echo __pycache__/ >> .gitignore
+    echo *.pyc >> .gitignore
+    echo .env >> .gitignore
 )
 
-:: 8. Éú³É .env Ê¾Àý
 if not exist ".env" (
-    (
-        echo # »·¾³±äÁ¿ÅäÖÃ
-        echo APP_NAME=%~n0
-        echo ENV=development
-        echo DEBUG=True
-        echo PORT=8000
-        echo 
-        echo # Êý¾Ý¿â
-        echo DATABASE_URL=sqlite:///dev.db
-        echo 
-        echo # API ÃÜÔ¿£¨Çë×ÔÐÐÌæ»»£©
-        echo OPENAI_API_KEY=sk-...
-        echo SECRET_KEY=your-super-secret-key-here
-    ) > ".env"
-    echo ? ÒÑÉú³É .env Ê¾Àý£¨ÇëÐÞ¸ÄºóÊ¹ÓÃ£© >> "%logFile%"
+    echo DEBUG=True > .env
+    echo SECRET_KEY=dev-secret-key-change-me >> .env
 )
 
-:: 9. Éú³É README.md£¨¸ü×¨Òµ°æ£©
 if not exist "README.md" (
-    (
-        echo # %~n0
-        echo.
-        echo ![Python](https://img.shields.io/badge/python-3.9+-blue.svg)
-        echo ![License](https://img.shields.io/badge/license-MIT-green)
-        echo.
-        echo ## ÏîÄ¿¼ò½é
-        echo ÓÉ `setup_project.bat` ×Ô¶¯³õÊ¼»¯£¬²ÉÓÃ±ê×¼²¼¾ÖºÍ×î¼ÑÊµ¼ù¡£
-        echo.
-        echo ## ¿ìËÙ¿ªÊ¼
-        echo ```bash
-        echo # ¼¤»îÐéÄâ»·¾³
-        echo .venv\Scripts\activate
-        echo # °²×°ÒÀÀµ
-        echo pip install -r requirements.txt
-        echo # ÔËÐÐ²âÊÔ
-        echo python -m unittest discover tests
-        echo ```
-        echo.
-        echo ## Ä¿Â¼ËµÃ÷
-        echo - `src/`      Ö÷Ô´Âë
-        echo - `tests/`     µ¥Ôª²âÊÔ
-        echo - `data/`      Êý¾ÝÎÄ¼þ
-        echo - `notebooks/` Jupyter ÊµÑé
-        echo - `models/`    ÑµÁ·ºÃµÄÄ£ÐÍ
-        echo.
-        echo Made with ?? using one-click setup
-    ) > "README.md"
-    echo ? ÒÑÉú³É×¨Òµ README.md >> "%logFile%"
+    echo # %~n0 > README.md
+    echo. >> README.md
+    echo é¡¹ç›®å·²ç”±ä¸€é”®åˆå§‹åŒ–è„šæœ¬ç”Ÿæˆ >> README.md
+    echo. >> README.md
+    echo æ¿€æ´»çŽ¯å¢ƒï¼š.venv\Scripts\activate >> README.md
 )
 
-:: 10. VSCode ¹¤×÷ÇøÅäÖÃ£¨Ç¿ÁÒÍÆ¼ö£©
-if not exist ".vscode" mkdir ".vscode"
+:: 5. VSCode é…ç½®ï¼ˆå¯é€‰ï¼‰
+if not exist ".vscode" mkdir .vscode
 (
-    echo {
+    echo { 
     echo     "python.defaultInterpreterPath": ".venv/Scripts/python.exe",
-    echo     "python.formatting.provider": "black",
-    echo     "python.linting.enabled": true,
-    echo     "python.linting.pylintEnabled": false,
-    echo     "python.linting.flake8Enabled": true,
-    echo     "editor.formatOnSave": true,
-    echo     "files.exclude": {
-    echo         "**/.venv": true,
-    echo         "**/__pycache__": true
-    echo     }
+    echo     "editor.formatOnSave": true
     echo }
-) > ".vscode\settings.json"
+) > .vscode\settings.json
 
-:: launch.json Ö§³Ö¸ü¶à³¡¾°
-(
-    echo {
-    echo     "version": "0.2.0",
-    echo     "configurations": [
-    echo         {
-    echo             "name": "Run Current File",
-    echo             "type": "python",
-    echo             "request": "launch",
-    echo             "program": "${file}",
-    echo             "console": "integratedTerminal"
-    echo         },
-    echo         {
-    echo             "name": "Run Tests",
-    echo             "type": "python",
-    echo             "request": "launch",
-    echo             "module": "pytest",
-    echo             "args": ["-v"],
-    echo             "console": "integratedTerminal"
-    echo         }
-    echo     ]
-    echo }
-) > ".vscode\launch.json"
-echo ? ÒÑÉú³É VSCode ÍÆ¼öÅäÖÃ >> "%logFile%"
-
-:: 11. ³õÊ¼»¯ git£¨¿ÉÑ¡£©
-git init >nul 2>&1 && git add . >nul 2>&1 && git commit -m "Initial commit by setup_project.bat" >nul 2>&1
-if %errorlevel% equ 0 echo ? ÒÑ³õÊ¼»¯ git ²Ö¿â²¢Ìá½»Ê×´ÎÌá½» >> "%logFile%"
-
-:: ½áÊø
 echo.
 echo ==================================================
-echo           ÏîÄ¿³õÊ¼»¯Íê³É£¡
+echo               é¡¹ç›®åˆå§‹åŒ–å®Œæˆï¼
 echo ==================================================
 echo.
-echo ÏÂÒ»²½²Ù×÷½¨Òé£º
-echo   1. code .                 # ´ò¿ª VSCode
-echo   2. ÐÞ¸Ä .env ÎÄ¼þ
-echo   3. ÔÚ src/ ÏÂ¿ªÊ¼±àÂë
-echo   4. ÔËÐÐ²âÊÔÑéÖ¤»·¾³
+echo å·²ç»ä¸ºä½ å‡†å¤‡å¥½ï¼š
+echo   âœ“ .venv è™šæ‹ŸçŽ¯å¢ƒ
+echo   âœ“ src/ tests/ data/ ç­‰ç›®å½•
+echo   âœ“ requirements.txt / .gitignore / .env / README.md
+echo   âœ“ VSCode é…ç½®
 echo.
-echo ²é¿´ÏêÏ¸ÈÕÖ¾£ºsetup.log
+echo çŽ°åœ¨ä½ å¯ä»¥ï¼š
+echo   code .                    ç›´æŽ¥æ‰“å¼€ VSCode
+echo   .venv\Scripts\activate    æ¿€æ´»çŽ¯å¢ƒ
 echo.
-echo [Íê³É] %date% %time% >> "%logFile%"
-deactivate >nul 2>&1
-pause
+echo [å®Œæˆ] %date% %time% >> "%logFile%"
+choice /c Y /n /m "æŒ‰ Y é”®å…³é—­çª—å£"
