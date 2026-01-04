@@ -1,1 +1,21 @@
-# 閸︺劍顒濇繅顐㈠晸妞ゅ湱娲版笟婵婄
+# LangChain 最新穩定版（1.x 系列，2026 年 1 月主流）
+langchain>=1.2.0
+langchain-core>=0.3.0
+langchain-openai>=0.2.0
+
+# langgraph（1.x 系列寫 agent 的必備）
+langgraph>=0.2.0
+langgraph-checkpoint>=1.0.0   # 用來支援記憶（可選，但推薦）
+
+# OpenAI SDK
+openai>=1.40.0
+
+# 環境變數
+python-dotenv>=1.0.0
+
+# 網路請求
+requests>=2.31.0
+
+# Jupyter 開發（如果你用 notebook）
+ipykernel>=6.29.0
+jupyter>=1.0.0
