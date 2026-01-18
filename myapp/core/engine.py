@@ -8,7 +8,12 @@ from myapp.core.registry import discover_plugins
 def build_agent():
     llm = ChatOpenAI(model="gpt-4o-mini")
     memory = MemorySaver()
-    base_tools = [Tool.from_function(get_weather)]
+    base_tools = [ Tool.from_function( 
+            func=get_weather, 
+            name="get_weather", 
+            description="根据城市名称获取天气信息" 
+        ) 
+    ]
     plugin_tools = discover_plugins()
     all_tools = base_tools + plugin_tools
 

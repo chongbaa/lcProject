@@ -1,4 +1,33 @@
+# Python 缓存
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+
+# 虚拟环境
 .venv/
+env/
+venv/
+
+# 环境变量
 .env
+.env.*
+
+# VS Code 配置
 .vscode/
+
+# Jupyter Notebook 检查点（如果你用过）
+.ipynb_checkpoints/
+
+# macOS 系统文件
+.DS_Store
+
+# Windows 系统文件
+Thumbs.db
+
+# Streamlit 临时文件
+.streamlit/config.toml
+.streamlit/secrets.toml
+
 .obsidian/

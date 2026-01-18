@@ -1,8 +1,8 @@
 import streamlit as st
 from myapp.core.engine import build_agent
 
-st.set_page_config(page_title="Weather Sage Pro", page_icon="🌪️")
-st.title("🌪️ Weather Sage Pro")
+st.set_page_config(page_title="天气查询助手", page_icon="🌪️")
+st.title("🌪️ 天气查询助手")
 
 query = st.text_input("请输入你的天气问题：")
 
